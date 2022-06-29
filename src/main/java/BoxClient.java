@@ -1,7 +1,5 @@
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class BoxClient {
-    private AtomicBoolean tumbler = new AtomicBoolean(false);
+    private volatile boolean tumbler = false;
     private final int SLEEP_TIME = 1000;
     private int iteration = 10;
 
@@ -9,7 +7,7 @@ public class BoxClient {
         try {
             while (iteration != 0) {
                 System.out.printf("Поток %s ВКлючил тумблер...\n", Thread.currentThread().getName());
-                tumbler.set(true);
+                tumbler = true;
                 iteration--;
                 System.out.println(iteration);
                 Thread.sleep(SLEEP_TIME);
@@ -22,14 +20,10 @@ public class BoxClient {
 
     public void unCheck() {
         while (true) {
-            if (tumbler.get()) {
-                System.out.printf("=^.^= Поток %s ВЫлючил тумблер!\n", Thread.currentThread().getName());
-                tumbler.set(false);
-            } else
-                continue;
+            if (tumbler) {
+                System.out.printf("=^.^= Поток %s ВЫключил тумблер!\n", Thread.currentThread().getName());
+                tumbler = false;
+            }
         }
-
     }
-
-
 }
